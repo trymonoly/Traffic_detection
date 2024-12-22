@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Display</title>
+    <style>
+        /* Fixed Logout Button */
+        .logout-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000; /* 确保按钮位于最上层 */
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: flex-start;
+            align-items: stretch;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa, #e4ebf5);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-right: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .sidebar a:hover {
+            color: #3b82f6;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 1000px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .form-container h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            color: #333333;
+        }
+
+        .form-container h2 {
+            font-size: 20px;
+            color: #444444;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #555555;
+            margin-bottom: 8px;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            font-size: 16px;
+            color: #444444;
+        }
+
+        th {
+            background-color: #4e73df;
+            color: white;
+            font-weight: bold;
+        }
+
+        td {
+            background-color: #f9fafb;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        /* Hover effect */
+        tr:hover {
+            background-color: #f1f5fb;
+        }
+
+        /* Pagination Buttons */
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+
+        .pagination button {
+            padding: 8px 16px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background-color: #f4f6f9;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover {
+            background-color: #4e73df;
+            color: white;
+            border-color: #4e73df;
+        }
+
+        .pagination button:disabled {
+            background-color: #e0e0e0;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>基于反向代理的流量检测</h2>
+        <ul>
+            <li><a href="/read_log">日志查看</a></li>
+            <li><a href="/Full_flow">完整流量</a></li>
+            <li><a href="/Configure">配置反向代理</a></li>
+        </ul>
+    </div>
+
+    <div class="form-container">
+        <h2>Log Table</h2>
+
+        <table>
+            <tr>
+                <th>时间</th>
+                <th>方法</th>
+                <th>IP</th>
+                <th>URL</th>
+            </tr>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.time }}</td>
+                <td>{{ log.method }}</td>
+                <td>{{ log.ip }}</td>
+                <td>{{ log.url }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div class="pagination">
+            <!-- 前往 1 页 -->
+            <a href="{{ url_for('read_log', page=1) }}">
+                <button {% if current_page == 1 %}disabled{% endif %}>前往 1 页</button>
+            </a>
+
+            <!-- 前往最新 -->
+            <a href="{{ url_for('read_log', page=total_pages) }}">
+                <button {% if current_page == total_pages %}disabled{% endif %}>前往最新</button>
+            </a>
+
+            <!-- 实时同步 -->
+            <button>实时同步</button>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">退出登录</button>
+
+        <script>
+            function logout() {
+                window.location.href = '/logout';
+            }
+        </script>
+    </div>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Display</title>
+    <style>
+        /* Fixed Logout Button */
+        .logout-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000; /* 确保按钮位于最上层 */
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: flex-start;
+            align-items: stretch;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa, #e4ebf5);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-right: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 15px;
+        }
+
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .sidebar a:hover {
+            color: #3b82f6;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 1000px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .form-container h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            color: #333333;
+        }
+
+        .form-container h2 {
+            font-size: 20px;
+            color: #444444;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #555555;
+            margin-bottom: 8px;
+        }
+
+        .textbox {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 20px;
+            padding: 15px;
+            font-size: 16px;
+            line-height: 1.6;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: #f9fafb;
+        }
+
+        .textbox:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+            background-color: #ffffff;
+        }
+
+        .textbox[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+
+        .textbox-container {
+            margin-bottom: 40px;
+        }
+
+        /* 状态显示 */
+        .status-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .status {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .status.running {
+            color: #2ecc71; /* 绿色 */
+        }
+
+        .status.stopped {
+            color: #e74c3c; /* 红色 */
+        }
+
+        .control-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .control-btn:hover {
+            background-color: #2980b9;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>基于反向代理的流量检测</h2>
+        <ul>
+            <li><a href="/read_log">日志查看</a></li>
+            <li><a href="/Full_flow">完整流量</a></li>
+            <li><a href="/Configure">配置反向代理</a></li>
+        </ul>
+    </div>
+
+    <div class="form-container">
+        <h1>配置反向代理</h1>
+        <form id="proxy-config-form">
+            <div class="textbox-container">
+                <h2>代理服务器地址:</h2>
+                <input type="text" id="proxy-server" class="textbox" placeholder="请输入代理服务器地址" required>
+            </div>
+
+            <div class="textbox-container">
+                <h2>代理服务器端口:</h2>
+                <input type="number" id="proxy-port" class="textbox" placeholder="请输入代理服务器端口" required>
+            </div>
+
+            <div class="textbox-container">
+                <h2>目标地址:</h2>
+                <input type="text" id="target-address" class="textbox" placeholder="请输入目标地址" required>
+            </div>
+
+            <div class="textbox-container">
+                <h2>目标端口:</h2>
+                <input type="number" id="target-port" class="textbox" placeholder="请输入目标端口" required>
+            </div>
+
+            <button type="submit" class="logout-btn">提交配置</button>
+        </form>
+
+        <!-- 启动和停止按钮 -->
+        <div class="status-container">
+            <div id="status" class="status stopped">状态：未启动</div>
+            <button id="start-btn" class="control-btn" onclick="startProxy()">启动</button>
+            <button id="stop-btn" class="control-btn" onclick="stopProxy()" style="display: none;">停止</button>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">退出登录</button>
+
+        <script>
+            let isProxyRunning = false;
+
+            // 启动反向代理
+            function startProxy() {
+                // 发送启动请求到服务器
+                fetch('/start-proxy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        proxyServer: document.getElementById('proxy-server').value,
+                        proxyPort: document.getElementById('proxy-port').value,
+                        targetAddress: document.getElementById('target-address').value,
+                        targetPort: document.getElementById('target-port').value
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 更新状态
+                        isProxyRunning = true;
+                        updateStatus();
+                    } else {
+                        alert('启动失败，请检查配置或重试。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("启动失败，请重试。");
+                });
+            }
+
+            // 停止反向代理
+            function stopProxy() {
+                // 发送停止请求到服务器
+                fetch('/stop-proxy', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 更新状态
+                        isProxyRunning = false;
+                        updateStatus();
+                    } else {
+                        alert('停止失败，请检查配置或重试。');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("停止失败，请重试。");
+                });
+            }
+
+            // 更新状态显示
+            function updateStatus() {
+                const statusElement = document.getElementById('status');
+                const startBtn = document.getElementById('start-btn');
+                const stopBtn = document.getElementById('stop-btn');
+
+                if (isProxyRunning) {
+                    statusElement.textContent = '状态：正在运行';
+                    statusElement.classList.remove('stopped');
+                    statusElement.classList.add('running');
+                    startBtn.style.display = 'none';
+                    stopBtn.style.display = 'inline-block';
+                } else {
+                    statusElement.textContent = '状态：未启动';
+                    statusElement.classList.remove('running');
+                    statusElement.classList.add('stopped');
+                    startBtn.style.display = 'inline-block';
+                    stopBtn.style.display = 'none';
+                }
+            }
+
+            // 退出登录
+            function logout() {
+                window.location.href = '/logout';
+            }
+
+            // 表单提交事件
+            document.getElementById('proxy-config-form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                alert("配置已提交！");
+            });
+        </script>
+    </div>
+</body>
+</html>

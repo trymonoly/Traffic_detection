@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Display</title>
+    <style>
+        /* Fixed Logout Button */
+        .logout-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000; /* 确保按钮位于最上层 */
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: flex-start;
+            align-items: stretch;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa, #e4ebf5);
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-right: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .sidebar li {
+            margin-bottom: 15px;
+        }
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+        .sidebar a:hover {
+            color: #3b82f6;
+        }
+        .form-container {
+            width: 100%;
+            max-width: 1000px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .form-container h1 {
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            color: #333333;
+        }
+        .form-container h2 {
+            font-size: 20px;
+            color: #444444;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 16px;
+            color: #555555;
+            margin-bottom: 8px;
+        }
+        .textbox {
+            width: 100%;
+            height: 250px;
+            margin-bottom: 20px;
+            padding: 15px;
+            font-size: 16px;
+            line-height: 1.6;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: #f9fafb;
+        }
+        .textbox:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+            background-color: #ffffff;
+        }
+        .textbox[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+        .textbox-container {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>基于反向代理的流量检测</h2>
+        <ul>
+            <li><a href="/read_log">日志查看</a></li>
+            <li><a href="/Full_flow">完整流量</a></li>
+            <li><a href="/Configure">配置反向代理</a></li>
+        </ul>
+    </div>
+
+    <div class="form-container">
+                <h1>全部数据包</h1>
+        {% for item in data %}
+        <div class="textbox-container">
+            <h2>时间:{{ item.time }}</h2>
+            <p>Request Packet</p>
+            <textarea class="textbox" readonly>{{ item.req }}</textarea>
+            <p>Response Packet</p>
+            <textarea class="textbox" readonly>{{ item.res }}</textarea>
+        </div>
+        {% endfor %}
+
+
+        <button class="logout-btn" onclick="logout()">退出登录</button>
+
+        <script>
+            function logout() {
+                // 清除会话或执行其他退出逻辑
+                // 例如，可以重定向到登录页面
+                window.location.href = '/logout'; // 假设登录页面是 /login
+            }
+        </script>
+    </div>
+</body>
+</html>
